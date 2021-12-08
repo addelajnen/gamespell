@@ -1,1 +1,3 @@
 # gamespell
+
+My attempt to invent the wheel again by creating yet another graphics/game library from scratch instead of using the really good ones already out there...
