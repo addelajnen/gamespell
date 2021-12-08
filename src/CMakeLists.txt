@@ -1,0 +1,2 @@
+add_subdirectory(libgamespell_core)
+add_subdirectory(libgamespell_opengl)
