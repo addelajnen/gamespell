@@ -28,11 +28,24 @@
 
 namespace gs {
 namespace graphics {
-Shader::Shader(std::filesystem::path filename, Type type)
-    : type(type)
-    , handle(GS_glCreateShader(fromType(type)))
-    , released(false) {
-    std::ifstream is(filename.c_str());
+Shader::Shader()
+    : type(Type::Vertex)
+    , handle(0)
+    , released(true) {
+}
+
+Shader::~Shader() {
+    release();
+}
+
+void Shader::load(std::filesystem::path filename, Type shaderType) {
+    release();
+
+    handle = GS_glCreateShader(fromType(shaderType));
+    type   = shaderType;
+    path   = filename;
+
+    std::ifstream is(path.c_str());
     if (!is) {
         throw std::runtime_error("failed to load shader");
     }
@@ -64,10 +77,8 @@ Shader::Shader(std::filesystem::path filename, Type type)
         throw std::runtime_error(std::string("failed to compile shader: ") +
                                  message.data());
     }
-}
 
-Shader::~Shader() {
-    release();
+    released = false;
 }
 
 void Shader::release() {

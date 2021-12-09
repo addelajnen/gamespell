@@ -24,7 +24,7 @@
 #include <memory>
 #include <vector>
 
-#include <gs/graphics/vertex_schema.hh>
+#include <gs/graphics/vertex_attribute.hh>
 
 namespace gs {
 namespace graphics {

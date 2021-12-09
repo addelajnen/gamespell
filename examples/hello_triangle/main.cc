@@ -46,12 +46,15 @@ int main(int argc, char** argv) {
 
         gs::graphics::RenderContext rc(window.getHandle());
 
-        gs::graphics::Shader vs("assets/shaders/vertex_shader.glsl",
+        gs::graphics::Shader vs;
+        vs.load("assets/shaders/vertex_shader.glsl",
                                 gs::graphics::Shader::Type::Vertex);
-        gs::graphics::Shader fs("assets/shaders/fragment_shader.glsl",
+        gs::graphics::Shader fs;
+        fs.load("assets/shaders/fragment_shader.glsl",
                                 gs::graphics::Shader::Type::Fragment);
 
-        gs::graphics::ShaderProgram program(vs, fs);
+        gs::graphics::ShaderProgram program;
+        program.load(vs, fs);
 
         float vertices[3][7] = {
             { -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f },

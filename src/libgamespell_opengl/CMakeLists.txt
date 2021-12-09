@@ -10,6 +10,11 @@ target_compile_features(gamespell_opengl PRIVATE cxx_std_20)
 include_directories(graphics)
 
 if(WIN32)
+target_compile_definitions(gamespell_opengl
+    PRIVATE
+        UNICODE
+        _UNICODE)
+
 target_sources(gamespell_opengl
     PRIVATE
         graphics/win32/opengl_render_context.cc)

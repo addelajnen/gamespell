@@ -4,6 +4,11 @@ add_library(gamespell_core
 target_compile_features(gamespell_core PRIVATE cxx_std_20)
 
 if(WIN32)
+target_compile_definitions(gamespell_core
+    PRIVATE
+        UNICODE
+        _UNICODE)
+
 target_sources(gamespell_core
     PRIVATE
         os/win32/window.cc)

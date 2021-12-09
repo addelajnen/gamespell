@@ -26,9 +26,26 @@
 
 namespace gs {
 namespace graphics {
-ShaderProgram::ShaderProgram(const Shader& vertex, const Shader& fragment)
-    : handle(GS_glCreateProgram())
-    , released(false) {
+ShaderProgram::ShaderProgram()
+    : handle(0)
+    , released(true) {
+}
+
+ShaderProgram::~ShaderProgram() {
+    release();
+}
+
+void ShaderProgram::use() {
+    if (!released) {
+        GS_glUseProgram(handle);
+    }
+}
+
+void ShaderProgram::load(const Shader& vertex, const Shader& fragment) {
+    release();
+
+    handle = GS_glCreateProgram();
+
     if (!vertex.isReleased()) {
         GS_glAttachShader(handle, vertex.getHandle());
     }
@@ -54,16 +71,8 @@ ShaderProgram::ShaderProgram(const Shader& vertex, const Shader& fragment)
         throw std::runtime_error(
             std::string("failed to link shader program: ") + message);
     }
-}
 
-ShaderProgram::~ShaderProgram() {
-    release();
-}
-
-void ShaderProgram::use() {
-    if (!released) {
-        GS_glUseProgram(handle);
-    }
+    released = false;
 }
 
 void ShaderProgram::release() {
@@ -92,7 +101,7 @@ void ShaderProgram::setFloat(const char* name, float value) const {
     }
 }
 
-void ShaderProgram::setMatrix4(const char* name, float value[16]) const {
+void ShaderProgram::setMatrix4(const char* name, const float value[16]) const {
     if (!released) {
         GS_glUniformMatrix4fv(
             GS_glGetUniformLocation(handle, name), 1, GL_FALSE, value);

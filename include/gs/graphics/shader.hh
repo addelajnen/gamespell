@@ -29,21 +29,24 @@ class Shader {
 public:
     enum class Type { Vertex = 0, Fragment };
 
-    explicit Shader(std::filesystem::path filename, Type type);
+    explicit Shader();
     ~Shader();
 
+    void load(std::filesystem::path filename, Type shaderType);
     void release();
 
-    inline unsigned int getHandle() const { return handle; }
-    inline Type         getType() const { return type; }
-    inline bool         isReleased() const { return released; }
+    inline unsigned int   getHandle() const { return handle; }
+    inline Type           getType() const { return type; }
+    inline bool           isReleased() const { return released; }
+    std::filesystem::path getPath() const { return path; }
 
 private:
     unsigned int fromType(Type type);
 
-    unsigned int handle;
-    Type         type;
-    bool         released;
+    unsigned int          handle;
+    Type                  type;
+    bool                  released;
+    std::filesystem::path path;
 };
 } // namespace graphics
 } // namespace gs

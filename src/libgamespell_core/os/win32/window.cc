@@ -18,7 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#include <queue>
 #include <stdexcept>
 
 #include <windows.h>
@@ -60,33 +59,33 @@ Window::Implementation::~Implementation() {
     destroyWindow();
 
     if (shouldUnregisterWindowClass) {
-        UnregisterClass(wc.lpszClassName, wc.hInstance);
+        UnregisterClassW(wc.lpszClassName, wc.hInstance);
     }
 }
 
 void Window::Implementation::createWindow(unsigned int width,
                                           unsigned int height,
                                           const char*  title) {
-    HINSTANCE hinstance = GetModuleHandle(nullptr);
+    HINSTANCE hinstance = GetModuleHandleW(nullptr);
     if (!hinstance) {
         throw std::runtime_error("failed to get windows module handle");
     }
 
     wc.lpszClassName = TEXT("gamespellwindowclass");
-    if (!GetClassInfoEx(hinstance, wc.lpszClassName, &wc)) {
+    if (!GetClassInfoExW(hinstance, wc.lpszClassName, &wc)) {
         wc.cbSize        = sizeof(WNDCLASSEX);
         wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
         wc.lpfnWndProc   = Window::Implementation::winProc;
         wc.cbClsExtra    = 0;
         wc.cbWndExtra    = 0;
         wc.hInstance     = hinstance;
-        wc.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
-        wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+        wc.hIcon         = LoadIconW(NULL, IDI_APPLICATION);
+        wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
         wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
-        wc.lpszMenuName  = NULL;
-        wc.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
+        wc.lpszMenuName  = nullptr;
+        wc.hIconSm       = LoadIconW(NULL, IDI_APPLICATION);
 
-        if (!RegisterClassEx(&wc)) {
+        if (!RegisterClassExW(&wc)) {
             throw std::runtime_error("failed to register window class");
         }
 
@@ -103,25 +102,33 @@ void Window::Implementation::createWindow(unsigned int width,
     int cx = (GetSystemMetrics(SM_CXSCREEN) / 2) - (rc.right - rc.left) / 2;
     int cy = (GetSystemMetrics(SM_CYSCREEN) / 2) - (rc.bottom - rc.top) / 2;
 
-    HWND hwnd = CreateWindowEx(WS_EX_APPWINDOW,
-                               wc.lpszClassName,
-                               title,
-                               WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN |
-                                   WS_CLIPSIBLINGS,
-                               cx,
-                               cy,
-                               rc.right - rc.left,
-                               rc.bottom - rc.top,
-                               nullptr,
-                               nullptr,
-                               wc.hInstance,
-                               this);
+    unsigned int size = MultiByteToWideChar(
+        CP_UTF8, MB_COMPOSITE, title, -1, nullptr, 0);
+    std::vector<wchar_t> wcTitle(size);
+    wcTitle.push_back('\0');
+    MultiByteToWideChar(CP_UTF8, MB_COMPOSITE, title, -1, wcTitle.data(), size);
+
+    HWND hwnd = CreateWindowExW(WS_EX_APPWINDOW,
+                                wc.lpszClassName,
+                                wcTitle.data(),
+                                WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN |
+                                    WS_CLIPSIBLINGS,
+                                cx,
+                                cy,
+                                rc.right - rc.left,
+                                rc.bottom - rc.top,
+                                nullptr,
+                                nullptr,
+                                wc.hInstance,
+                                this);
     if (!hwnd) {
         throw std::runtime_error("failed to create window");
     }
 
     UpdateWindow(hwnd);
     ShowWindow(hwnd, SW_SHOW);
+
+    SetWindowTextW(hwnd, wcTitle.data());
 
     owner.handle = hwnd;
     owner.closed = false;
@@ -139,9 +146,9 @@ void Window::Implementation::destroyWindow() {
 void Window::Implementation::processWindowMessages() {
     if (owner.handle) {
         MSG msg;
-        while (PeekMessage(&msg, owner.handle, 0, 0, PM_REMOVE)) {
+        while (PeekMessageW(&msg, owner.handle, 0, 0, PM_REMOVE)) {
             TranslateMessage(&msg);
-            DispatchMessage(&msg);
+            DispatchMessageW(&msg);
         }
     }
 }
@@ -157,16 +164,16 @@ LRESULT CALLBACK Window::Implementation::winProc(HWND   hwnd,
         implementation = reinterpret_cast<Window::Implementation*>(
             cs->lpCreateParams);
         if (implementation) {
-            SetWindowLongPtr(hwnd,
-                             GWLP_USERDATA,
-                             reinterpret_cast<LONG_PTR>(implementation));
+            SetWindowLongPtrW(hwnd,
+                              GWLP_USERDATA,
+                              reinterpret_cast<LONG_PTR>(implementation));
         }
 
         return TRUE;
     }
 
     implementation = reinterpret_cast<Window::Implementation*>(
-        GetWindowLongPtr(hwnd, GWLP_USERDATA));
+        GetWindowLongPtrW(hwnd, GWLP_USERDATA));
     if (implementation) {
         switch (msg) {
         case WM_CLOSE:
@@ -193,7 +200,7 @@ LRESULT CALLBACK Window::Implementation::winProc(HWND   hwnd,
         };
     }
 
-    return DefWindowProc(hwnd, msg, wParam, lParam);
+    return DefWindowProcW(hwnd, msg, wParam, lParam);
 }
 
 Window::Window()

@@ -27,8 +27,10 @@ namespace gs {
 namespace graphics {
 class ShaderProgram {
 public:
-    explicit ShaderProgram(const Shader& vertex, const Shader& fragment);
+    explicit ShaderProgram();
     ~ShaderProgram();
+
+    void load(const Shader& vertex, const Shader& fragment);
 
     void use();
     void release();
@@ -36,7 +38,7 @@ public:
     void setBool(const char* name, bool value) const;
     void setInt(const char* name, int value) const;
     void setFloat(const char* name, float value) const;
-    void setMatrix4(const char* name, float value[16]) const;
+    void setMatrix4(const char* name, const float value[16]) const;
 
     inline unsigned int getHandle() const { return handle; }
     inline bool         isReleased() const { return released; }
