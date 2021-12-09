@@ -28,17 +28,6 @@
 #include <gs/graphics/shader_program.hh>
 #include <gs/graphics/vertex_buffer.hh>
 
-void printMatrix(const gs::math::Matrix4x4& m) {
-    for (unsigned int y = 0; y < 4; y++) {
-        for (unsigned int x = 0; x < 4; x++) {
-            std::cout << m.m[y*4 + x];
-            if (x < 3) {
-                std::cout << "  ";
-            }
-        }
-        std::cout << std::endl;
-    }
-}
 int main(int argc, char** argv) {
     try {
         gs::os::Window window;
@@ -84,8 +73,6 @@ int main(int argc, char** argv) {
         };
 
         transform.translate(0.25f, 0.25f, 0.0f);
-
-        printMatrix(transform);
 
         float angle = 0.0f;
         while (!window.isClosed()) {

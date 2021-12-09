@@ -11,5 +11,6 @@ target_compile_definitions(gamespell_core
 
 target_sources(gamespell_core
     PRIVATE
-        os/win32/window.cc)
+        os/win32/window.cc
+        os/win32/unicode.cc)
 endif()
