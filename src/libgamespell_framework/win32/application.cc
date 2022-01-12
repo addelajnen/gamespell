@@ -18,47 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef GAMESPELL_GRAPHICS_RENDER_CONTEXT_HH
-#define GAMESPELL_GRAPHICS_RENDER_CONTEXT_HH
+#include <gs/framework/application.hh>
 
-#include <memory>
-
-#include <gs/graphics/primitive.hh>
-#include <gs/graphics/vertex_buffer.hh>
-#include <gs/math/matrix4x4.hh>
-#include <gs/os/window_handle.hh>
+#include <gs/os/unicode.hh>
 
 namespace gs {
-namespace graphics {
-class RenderContext {
-public:
-    RenderContext();
-    ~RenderContext();
-
-    void attach(gs::os::WindowHandle hwnd);
-    void detach();
-
-    void clear();
-    void draw(const VertexBuffer& buffer,
-              unsigned int        start,
-              unsigned int        end,
-              Primitive           primitive);
-    void swapBuffers();
-
-    void updateViewport(unsigned int x,
-                        unsigned int y,
-                        unsigned int width,
-                        unsigned int height);
-
-    inline bool isAttached() const { return hwnd != nullptr; }
-
-private:
-    struct Implementation;
-
-    std::unique_ptr<Implementation> implementation;
-    gs::os::WindowHandle            hwnd;
-};
-} // namespace graphics
+namespace framework {
+void Application::displayError(std::string_view message) {
+    MessageBoxW(getWindow().getHandle(),
+                gs::os::mbToWc(message.cbegin()).c_str(),
+                L"Gamespell error",
+                MB_ICONEXCLAMATION);
+}
+} // namespace framework
 } // namespace gs
-
-#endif // GAMESPELL_GRAPHICS_RENDER_CONTEXT_HH

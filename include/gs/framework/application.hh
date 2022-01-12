@@ -18,47 +18,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef GAMESPELL_GRAPHICS_RENDER_CONTEXT_HH
-#define GAMESPELL_GRAPHICS_RENDER_CONTEXT_HH
+#ifndef GAMESPELL_FRAMEWORK_APPLICATION_HH
+#define GAMESPELL_FRAMEWORK_APPLICATION_HH
 
 #include <memory>
+#include <string_view>
 
-#include <gs/graphics/primitive.hh>
-#include <gs/graphics/vertex_buffer.hh>
-#include <gs/math/matrix4x4.hh>
-#include <gs/os/window_handle.hh>
+#include <gs/os/window.hh>
+#include <gs/os/window_event.hh>
 
 namespace gs {
-namespace graphics {
-class RenderContext {
+namespace framework {
+class Application {
 public:
-    RenderContext();
-    ~RenderContext();
+    virtual ~Application();
 
-    void attach(gs::os::WindowHandle hwnd);
-    void detach();
+    static std::unique_ptr<Application> create();
 
-    void clear();
-    void draw(const VertexBuffer& buffer,
-              unsigned int        start,
-              unsigned int        end,
-              Primitive           primitive);
-    void swapBuffers();
+    int main(int argc, char** argv);
 
-    void updateViewport(unsigned int x,
-                        unsigned int y,
-                        unsigned int width,
-                        unsigned int height);
+protected:
+    Application(unsigned int width, unsigned int height, const char* title);
 
-    inline bool isAttached() const { return hwnd != nullptr; }
+    virtual void onStartup();
+    virtual void onShutdown();
+    virtual void onUpdate();
+    virtual void onWindowClosed(gs::os::WindowEvent& event);
+    virtual void onWindowResized(gs::os::WindowEvent& event);
+    virtual void onWindowMoved(gs::os::WindowEvent& event);
+
+    void displayError(std::string_view message);
+
+    inline gs::os::Window& getWindow() { return window; }
 
 private:
-    struct Implementation;
-
-    std::unique_ptr<Implementation> implementation;
-    gs::os::WindowHandle            hwnd;
+    bool           running;
+    gs::os::Window window;
 };
-} // namespace graphics
+} // namespace framework
 } // namespace gs
 
-#endif // GAMESPELL_GRAPHICS_RENDER_CONTEXT_HH
+#endif // GAMESPELL_FRAMEWORK_APPLICATION_HH

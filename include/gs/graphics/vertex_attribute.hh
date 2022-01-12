@@ -38,28 +38,30 @@ struct VertexAttribute {
         Double
     };
 
+    unsigned int offset;
     Type         type;
     unsigned int size;
     Usage        usage;
 };
 
 const std::vector<VertexAttribute> FloatXY = {
-    {VertexAttribute::Type::Float,
+    {0,
+     VertexAttribute::Type::Float,
      sizeof(float) * 2,
      VertexAttribute::Usage::Position}
 };
 const std::vector<VertexAttribute> FloatXYRGBA = {
-    {VertexAttribute::Type::Float, 2, VertexAttribute::Usage::Position},
-    {VertexAttribute::Type::Float, 4,    VertexAttribute::Usage::Color}
+    {0, VertexAttribute::Type::Float, 2, VertexAttribute::Usage::Position},
+    {0, VertexAttribute::Type::Float, 4,    VertexAttribute::Usage::Color}
 };
 
 const std::vector<VertexAttribute> FloatXYZ = {
-    {VertexAttribute::Type::Float, 3, VertexAttribute::Usage::Position}
+    {0, VertexAttribute::Type::Float, 3, VertexAttribute::Usage::Position}
 };
 
 const std::vector<VertexAttribute> FloatXYZRGBA = {
-    {VertexAttribute::Type::Float, 3, VertexAttribute::Usage::Position},
-    {VertexAttribute::Type::Float, 4,    VertexAttribute::Usage::Color}
+    {0, VertexAttribute::Type::Float, 3, VertexAttribute::Usage::Position},
+    {0, VertexAttribute::Type::Float, 4,    VertexAttribute::Usage::Color}
 };
 
 } // namespace graphics

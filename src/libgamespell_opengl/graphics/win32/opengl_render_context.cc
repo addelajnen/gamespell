@@ -64,9 +64,18 @@ struct RenderContext::Implementation {
     }
 };
 
-RenderContext::RenderContext(gs::os::WindowHandle hwnd)
+RenderContext::RenderContext()
     : implementation(std::make_unique<RenderContext::Implementation>())
-    , hwnd(hwnd) {
+    , hwnd(nullptr) {
+}
+
+RenderContext::~RenderContext() {
+    detach();
+}
+
+void RenderContext::attach(gs::os::WindowHandle hwnd) {
+    detach();
+
     HINSTANCE hinstance = GetModuleHandle(nullptr);
     if (!hinstance) {
         throw std::runtime_error("failed to get application module handle");
@@ -447,7 +456,7 @@ RenderContext::RenderContext(gs::os::WindowHandle hwnd)
     }
 }
 
-RenderContext::~RenderContext() {
+void RenderContext::detach() {
     if (implementation->hrcDummy) {
         wglDeleteContext(implementation->hrcDummy);
         implementation->hrcDummy = nullptr;

@@ -30,11 +30,14 @@ namespace gs {
 namespace graphics {
 class VertexBuffer {
 public:
-    explicit VertexBuffer(void*                               vertices,
-                          unsigned int                        vertexCount,
-                          unsigned int                        vertexSize,
-                          const std::vector<VertexAttribute>& attributes);
+    VertexBuffer();
     ~VertexBuffer();
+
+    void assign(void*                               vertices,
+                unsigned int                        count,
+                unsigned int                        size,
+                unsigned int                        stride,
+                const std::vector<VertexAttribute>& attributes);
 
     void use() const;
 

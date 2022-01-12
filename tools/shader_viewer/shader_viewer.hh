@@ -18,47 +18,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef GAMESPELL_GRAPHICS_RENDER_CONTEXT_HH
-#define GAMESPELL_GRAPHICS_RENDER_CONTEXT_HH
+#ifndef GAMESPELL_TOOL_SHADER_VIEWER_HH
+#define GAMESPELL_TOOL_SHADER_VIEWER_HH
 
-#include <memory>
+#include <atomic>
 
-#include <gs/graphics/primitive.hh>
+#include <gs/framework/application.hh>
+
+#include <gs/graphics/render_context.hh>
+#include <gs/graphics/shader.hh>
+#include <gs/graphics/shader_program.hh>
 #include <gs/graphics/vertex_buffer.hh>
+
 #include <gs/math/matrix4x4.hh>
-#include <gs/os/window_handle.hh>
 
-namespace gs {
-namespace graphics {
-class RenderContext {
+#include <gs/os/file_watcher.hh>
+
+class ShaderViewer : public gs::framework::Application {
 public:
-    RenderContext();
-    ~RenderContext();
+    ShaderViewer();
+    ~ShaderViewer();
 
-    void attach(gs::os::WindowHandle hwnd);
-    void detach();
-
-    void clear();
-    void draw(const VertexBuffer& buffer,
-              unsigned int        start,
-              unsigned int        end,
-              Primitive           primitive);
-    void swapBuffers();
-
-    void updateViewport(unsigned int x,
-                        unsigned int y,
-                        unsigned int width,
-                        unsigned int height);
-
-    inline bool isAttached() const { return hwnd != nullptr; }
+    virtual void onStartup() final;
+    virtual void onUpdate() final;
+    virtual void onWindowResized(gs::os::WindowEvent& event) final;
 
 private:
-    struct Implementation;
-
-    std::unique_ptr<Implementation> implementation;
-    gs::os::WindowHandle            hwnd;
+    gs::graphics::Shader        vertexShader;
+    gs::graphics::Shader        fragmentShader;
+    gs::graphics::ShaderProgram shaderProgram;
+    gs::graphics::VertexBuffer  vertexBuffer;
+    gs::math::Matrix4x4         transform;
+    gs::graphics::RenderContext renderContext;
+    gs::os::FileWatcher         watcher;
+    std::atomic_bool            shouldReloadVertexShader;
+    std::atomic_bool            shouldReloadFragmentShader;
 };
-} // namespace graphics
-} // namespace gs
 
-#endif // GAMESPELL_GRAPHICS_RENDER_CONTEXT_HH
+#endif // GAMESPELL_TOOL_SHADER_VIEWER_HH

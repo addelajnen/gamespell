@@ -18,47 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef GAMESPELL_GRAPHICS_RENDER_CONTEXT_HH
-#define GAMESPELL_GRAPHICS_RENDER_CONTEXT_HH
+#include <gs/framework/application.hh>
 
-#include <memory>
-
-#include <gs/graphics/primitive.hh>
-#include <gs/graphics/vertex_buffer.hh>
-#include <gs/math/matrix4x4.hh>
-#include <gs/os/window_handle.hh>
-
-namespace gs {
-namespace graphics {
-class RenderContext {
-public:
-    RenderContext();
-    ~RenderContext();
-
-    void attach(gs::os::WindowHandle hwnd);
-    void detach();
-
-    void clear();
-    void draw(const VertexBuffer& buffer,
-              unsigned int        start,
-              unsigned int        end,
-              Primitive           primitive);
-    void swapBuffers();
-
-    void updateViewport(unsigned int x,
-                        unsigned int y,
-                        unsigned int width,
-                        unsigned int height);
-
-    inline bool isAttached() const { return hwnd != nullptr; }
-
-private:
-    struct Implementation;
-
-    std::unique_ptr<Implementation> implementation;
-    gs::os::WindowHandle            hwnd;
-};
-} // namespace graphics
-} // namespace gs
-
-#endif // GAMESPELL_GRAPHICS_RENDER_CONTEXT_HH
+int main(int argc, char** argv) {
+    return gs::framework::Application::create()->main(argc, argv);
+}

@@ -68,6 +68,9 @@
         "map": "cpp",
         "set": "cpp",
         "regex": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "cfloat": "cpp",
+        "climits": "cpp",
+        "any": "cpp"
     }
 }

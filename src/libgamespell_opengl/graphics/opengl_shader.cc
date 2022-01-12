@@ -42,8 +42,11 @@ void Shader::load(std::filesystem::path filename, Type shaderType) {
     release();
 
     handle = GS_glCreateShader(fromType(shaderType));
-    type   = shaderType;
-    path   = filename;
+    if (handle == 0) {
+        throw std::runtime_error("failed to create shader");
+    }
+    type = shaderType;
+    path = filename;
 
     std::ifstream is(path.c_str());
     if (!is) {

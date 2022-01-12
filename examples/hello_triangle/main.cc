@@ -33,7 +33,8 @@ int main(int argc, char** argv) {
         gs::os::Window window;
         window.open(640, 480, "test");
 
-        gs::graphics::RenderContext rc(window.getHandle());
+        gs::graphics::RenderContext rc;
+        rc.attach(window.getHandle());
 
         gs::graphics::Shader vs;
         vs.load("assets/shaders/vertex_shader.glsl",
@@ -50,8 +51,9 @@ int main(int argc, char** argv) {
             {  0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
             {  0.0f,  0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f },
         };
-        
-        gs::graphics::VertexBuffer vb(vertices, 3, sizeof(float) * 7, {
+       
+        gs::graphics::VertexBuffer vb;
+        vb.assign(vertices, 3, sizeof(float) * 7, 0, {
             gs::graphics::VertexAttribute{
                 .type = gs::graphics::VertexAttribute::Type::Float,
                 .size = 3,                

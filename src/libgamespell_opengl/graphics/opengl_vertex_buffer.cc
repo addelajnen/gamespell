@@ -28,12 +28,14 @@
 namespace gs {
 namespace graphics {
 struct VertexBuffer::Implementation {
-    Implementation(void*                               vertices,
-                   unsigned int                        size,
-                   unsigned int                        stride,
-                   const std::vector<VertexAttribute>& attributes);
+    Implementation();
     ~Implementation();
 
+    void assign(void*                               vertices,
+                unsigned int                        count,
+                unsigned int                        size,
+                unsigned int                        stride,
+                const std::vector<VertexAttribute>& attributes);
     void use() const;
 
     unsigned int                vao;
@@ -44,17 +46,17 @@ struct VertexBuffer::Implementation {
     std::optional<unsigned int> normalAttribute;
 };
 
-VertexBuffer::Implementation::Implementation(
+void VertexBuffer::Implementation::assign(
     void*                               vertices,
-    unsigned int                        vertexCount,
-    unsigned int                        vertexSize,
+    unsigned int                        count,
+    unsigned int                        size,
+    unsigned int                        stride,
     const std::vector<VertexAttribute>& attributes) {
     GS_glGenVertexArrays(1, &vao);
     GS_glGenBuffers(1, &vbo);
     GS_glBindVertexArray(vao);
     GS_glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    GS_glBufferData(
-        GL_ARRAY_BUFFER, vertexCount * vertexSize, vertices, GL_STATIC_DRAW);
+    GS_glBufferData(GL_ARRAY_BUFFER, count * size, vertices, GL_STATIC_DRAW);
 
     unsigned int offset = 0;
     unsigned int index  = 0;
@@ -93,7 +95,7 @@ VertexBuffer::Implementation::Implementation(
                                  attribute.size,
                                  type,
                                  GL_FALSE,
-                                 vertexSize,
+                                 size,
                                  reinterpret_cast<void*>(offset));
 
         switch (attribute.usage) {
@@ -114,6 +116,9 @@ VertexBuffer::Implementation::Implementation(
         offset += attribute.size * typeSize;
         ++index;
     }
+}
+
+VertexBuffer::Implementation::Implementation() {
 }
 
 VertexBuffer::Implementation::~Implementation() {
@@ -137,17 +142,19 @@ void VertexBuffer::Implementation::use() const {
     }
 }
 
-VertexBuffer::VertexBuffer(void*                               vertices,
-                           unsigned int                        vertexCount,
-                           unsigned int                        vertexSize,
-                           const std::vector<VertexAttribute>& attributes)
-    : implementation(std::make_unique<Implementation>(vertices,
-                                                      vertexCount,
-                                                      vertexSize,
-                                                      attributes)) {
+VertexBuffer::VertexBuffer()
+    : implementation(std::make_unique<Implementation>()) {
 }
 
 VertexBuffer::~VertexBuffer() {
+}
+
+void VertexBuffer::assign(void*                               vertices,
+                          unsigned int                        count,
+                          unsigned int                        size,
+                          unsigned int                        stride,
+                          const std::vector<VertexAttribute>& attributes) {
+    implementation->assign(vertices, count, size, stride, attributes);
 }
 
 void VertexBuffer::use() const {
